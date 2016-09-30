@@ -1,11 +1,14 @@
 #!/bin/bash
 
-sudo sync
-sudo losetup /dev/loop0 distimage.img
-sudo partprobe /dev/loop0
-sudo mkfs.ext2 /dev/loop0p1
-sudo mount /dev/loop0p1 /mnt
-sudo cp -r $1/* /mnt
-sudo sync
-sudo umount /mnt
-sudo losetup -d /dev/loop0
+sync
+losetup /dev/loop0 distimage.img
+partprobe /dev/loop0
+mkfs.ext2 /dev/loop0p1
+mount /dev/loop0p1 /mnt
+cp Sambooca-Kernel-H3/arch/arm/boot/zImage $1/boot/
+cp script_bin/$2_script.bin $1/boot/script.bin
+cp boot_scr/$2_boot.scr $1/boot/boot.scr
+cp -r $1/* /mnt
+sync
+umount /mnt
+losetup -d /dev/loop0

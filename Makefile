@@ -4,20 +4,32 @@ TARGET_ROOTFS=rootfs
 SYS_VERSION=jessie
 ARCH=armhf
 CARDSIZE=1024
+TARGET_BOARD=orangepi_one
 
 bootimage:
-	sudo rm -rf md-debian sun8i rootfs distimage.img Sambooca-Kernel-H3
-	sudo debootstrap --arch=$(ARCH) --foreign $(SYS_VERSION) $(TARGET_ROOTFS)
-	sudo cp /usr/bin/qemu-arm-static $(TARGET_ROOTFS)/usr/bin
-	sudo chroot $(TARGET_ROOTFS) qemu-arm-static /bin/bash -c "/debootstrap/debootstrap --second-stage && dpkg --configure -a && exit"
+	rm -rf md-debian sun8i rootfs distimage.img Sambooca-Kernel-H3 u-boot u-boot-sunxi-with-spl.bin
+	debootstrap --arch=$(ARCH) --foreign $(SYS_VERSION) $(TARGET_ROOTFS)
+	cp /usr/bin/qemu-arm-static $(TARGET_ROOTFS)/usr/bin
+	chroot $(TARGET_ROOTFS) qemu-arm-static /bin/bash -c "/debootstrap/debootstrap --second-stage && dpkg --configure -a && exit"
 
-	./getkern.sh $(CC) $(CROSS_COMPILE)
+	./getuboot.sh $(TARGET_BOARD) $(CROSS_COMPILE) $(CC)
 
-	sudo dd if=/dev/zero of=distimage.img bs=1M count=$(CARDSIZE)
-	sudo sync
+	./getkern.sh $(CC) $(CROSS_COMPILE) $(TARGET_ROOTFS)
+
+	dd if=/dev/zero of=distimage.img bs=1M count=$(CARDSIZE)
+	sync
+
 	./partition.sh
-	./copy-rootfs.sh $(TARGET_ROOTFS)
-	sudo rm -rf md-debian sun8i rootfs Sambooca-Kernel-H3
+	./copy-rootfs.sh $(TARGET_ROOTFS) $(TARGET_BOARD)
+	dd if=u-boot-sunxi-with-spl.bin of=distimage.img bs=1024 seek=8
+
+	rm -rf md-debian sun8i rootfs Sambooca-Kernel-H3 u-boot u-boot-sunxi-with-spl.bin
 
 clean:
-	sudo rm -rf md-debian sun8i rootfs distimage.img Sambooca-Kernel-H3
+	rm -rf md-debian sun8i rootfs distimage.img Sambooca-Kernel-H3 u-boot u-boot-sunxi-with-spl.bin
+
+kernel:
+	./getkern.sh $(CC) $(CROSS_COMPILE) $(TARGET_ROOTFS)
+
+uboot:
+	./getuboot.sh $(TARGET_BOARD) $(CROSS_COMPILE) $(CC)
