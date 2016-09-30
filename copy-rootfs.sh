@@ -11,5 +11,5 @@ cp boot_scr/$2_boot.scr $1/boot/boot.scr
 cp -r $1/* /mnt
 sync
 umount /mnt
-dd if=u-boot-sunxi-with-spl.bin of=/dev/loop0 bs=1024 seek=8 conv=notrunc
+dd if=u-boot-sunxi-with-spl.bin of=/dev/loop0 bs=1024 seek=8 conv=notrunc 
 losetup -d /dev/loop0
