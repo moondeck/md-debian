@@ -3,14 +3,15 @@ CC=arm-linux-gnueabihf-gcc-5
 TARGET_ROOTFS=rootfs
 SYS_VERSION=jessie
 ARCH=armhf
-CARDSIZE=8192
+CARDSIZE=1024
 TARGET_BOARD=orangepi_one
+HOSTNAME=opi
 
 bootimage:
 	rm -rf md-debian sun8i rootfs distimage.img Sambooca-Kernel-H3 u-boot u-boot-sunxi-with-spl.bin
 	debootstrap --arch=$(ARCH) --foreign $(SYS_VERSION) $(TARGET_ROOTFS)
 	cp /usr/bin/qemu-arm-static $(TARGET_ROOTFS)/usr/bin
-	chroot $(TARGET_ROOTFS) qemu-arm-static /bin/bash -c "/debootstrap/debootstrap --second-stage && dpkg --configure -a && tasksel && passwd && exit"
+	chroot $(TARGET_ROOTFS) qemu-arm-static /bin/bash -c "/debootstrap/debootstrap --second-stage	&& dpkg --configure -a && tasksel && hostname $(HOSTNAME) && echo $(HOSTNAME) > /etc/hostname && passwd && exit"
 
 	./getuboot.sh $(TARGET_BOARD) $(CROSS_COMPILE) $(CC)
 
