@@ -1,0 +1,15 @@
+#!/bin/bash
+
+export HOSTNAME="opi-debian"
+
+echo "
+
+mmmmm      d
+m m m  ddddd
+m m m  d   d
+m m m  ddddd
+"
+dpkg --configure -a
+hostname $HOSTNAME 
+echo $HOSTNAME > /etc/hostname
+passwd

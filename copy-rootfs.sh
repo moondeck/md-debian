@@ -7,6 +7,9 @@ mkfs.ext2 /dev/loop0p1
 mount /dev/loop0p1 /mnt
 cp utils/* $1/usr/sbin
 chmod -R 744 $1/usr/sbin
+
+chown -R man /var/cache/man
+
 cp Sambooca-Kernel-H3/arch/arm/boot/zImage $1/boot/
 cp script_bin/$2_script.bin $1/boot/script.bin
 cp boot_scr/$2_boot.scr $1/boot/boot.scr
