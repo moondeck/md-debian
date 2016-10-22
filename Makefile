@@ -1,5 +1,5 @@
 CROSS_COMPILE=arm-linux-gnueabihf-
-CC=arm-linux-gnueabihf-gcc
+CC=arm-linux-gnueabihf-gcc-5
 TARGET_ROOTFS=rootfs
 SYS_VERSION=jessie
 ARCH=armhf
@@ -16,7 +16,7 @@ bootimage:
 	cp /usr/bin/qemu-arm-static $(TARGET_ROOTFS)/usr/bin
 
 	cp utils/chrootscript $(TARGET_ROOTFS)/bin/chrootscript
-	chmod 777 $(ROOTFS)/bin/chrootscript
+	chmod 777 $(TARGET_ROOTFS)/bin/chrootscript
 	chroot $(TARGET_ROOTFS) qemu-arm-static /bin/bash -c "/debootstrap/debootstrap --second-stage	&& /bin/chrootscript && exit"
 	rm $(TARGET_ROOTFS)/bin/chrootscript
 
