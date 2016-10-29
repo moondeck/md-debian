@@ -3,11 +3,12 @@ CC=arm-linux-gnueabihf-gcc-5
 TARGET_ROOTFS=rootfs
 SYS_VERSION=jessie
 ARCH=armhf
-CARDSIZE=1024
-TARGET_BOARD=orangepi_one
-HOSTNAME=opi
+CARDSIZE=2048
+TARGET_BOARD=orangepi_pc_plus
+WINDOW_MANAGER=xfce
 
 bootimage:
+
 	$(CC) -o test test.c
 	rm test
 
@@ -17,7 +18,7 @@ bootimage:
 
 	cp utils/chrootscript $(TARGET_ROOTFS)/bin/chrootscript
 	chmod 777 $(TARGET_ROOTFS)/bin/chrootscript
-	chroot $(TARGET_ROOTFS) qemu-arm-static /bin/bash -c "/debootstrap/debootstrap --second-stage	&& /bin/chrootscript && exit"
+	chroot $(TARGET_ROOTFS) qemu-arm-static /bin/bash -c "/debootstrap/debootstrap --second-stage	&& /bin/chrootscript $(WINDOW_MANAGER) && exit"
 	rm $(TARGET_ROOTFS)/bin/chrootscript
 
 	./getuboot.sh $(TARGET_BOARD) $(CROSS_COMPILE) $(CC)
@@ -39,3 +40,32 @@ kernel:
 
 uboot:
 	./getuboot.sh $(TARGET_BOARD) $(CROSS_COMPILE) $(CC)
+
+nokernel:
+	#debug feature, do not use
+	$(CC) -o test test.c
+	rm test
+
+	rm -rf md-debian sun8i rootfs distimage.img u-boot u-boot-sunxi-with-spl.bin
+	debootstrap --arch=$(ARCH) --foreign $(SYS_VERSION) $(TARGET_ROOTFS)
+	cp /usr/bin/qemu-arm-static $(TARGET_ROOTFS)/usr/bin
+
+	cp utils/chrootscript $(TARGET_ROOTFS)/bin/chrootscript
+	chmod 777 $(TARGET_ROOTFS)/bin/chrootscript
+	chroot $(TARGET_ROOTFS) qemu-arm-static /bin/bash -c "/debootstrap/debootstrap --second-stage	&& /bin/chrootscript && exit"
+	rm $(TARGET_ROOTFS)/bin/chrootscript
+
+	./getuboot.sh $(TARGET_BOARD) $(CROSS_COMPILE) $(CC)
+
+	dd if=/dev/zero of=distimage.img bs=1M count=$(CARDSIZE)
+	sync
+
+	./partition.sh
+	./copy-rootfs.sh $(TARGET_ROOTFS) $(TARGET_BOARD)
+
+mkimage:
+	dd if=/dev/zero of=distimage.img bs=1M count=$(CARDSIZE)
+	sync
+
+	./partition.sh
+	./copy-rootfs.sh $(TARGET_ROOTFS) $(TARGET_BOARD)

@@ -9,7 +9,24 @@ m m m  ddddd
 m m m  d   d
 m m m  ddddd
 "
+
 dpkg --configure -a
-hostname $HOSTNAME 
+hostname $HOSTNAME
 echo $HOSTNAME > /etc/hostname
+
 passwd
+
+if [[ $1 = "xfce" ]]; then
+  apt-get -yy install xfce4 xdm xfce4-goodies
+elif [[ $1 = "gnome"  ]]; then
+
+fi
+apt-get install locales
+sed -i '/en_US.UTF-8/s/^#//' /etc/locale.gen
+locale-gen en_US.UTF-8
+
+echo "
+modprobe hdmi
+
+exit 0
+" > /etc/rc.local
