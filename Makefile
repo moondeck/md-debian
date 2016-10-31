@@ -5,7 +5,7 @@ SYS_VERSION=jessie
 ARCH=armhf
 CARDSIZE=2048
 TARGET_BOARD=orangepi_pc_plus
-WINDOW_MANAGER=xfce
+WINDOW_MANAGER=
 
 bootimage:
 

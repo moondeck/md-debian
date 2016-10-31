@@ -18,10 +18,9 @@ passwd
 
 if [[ $1 = "xfce" ]]; then
   apt-get -yy install xfce4 xdm xfce4-goodies
-elif [[ $1 = "gnome"  ]]; then
-
 fi
-apt-get install locales
+
+apt-get -yy install locales wpasupplicant iw ssh
 sed -i '/en_US.UTF-8/s/^#//' /etc/locale.gen
 locale-gen en_US.UTF-8
 
