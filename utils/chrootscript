@@ -1,31 +1,48 @@
 #!/bin/bash
 
-export HOSTNAME="opi-debian"
 
+
+ROOTFS_HOSTNAME="opi-debian"
+ROOTFS_USERNAME="orangepi"
 echo "
 
-mmmmm      d
-m m m  ddddd
-m m m  d   d
-m m m  ddddd
+     mmmmmmmm     oooooooooo    oooooooooo    nn nnnnnn     bb            ii      aaaaaaa     nn nnnnnn
+    mm  mm  mm    oo      oo    oo      oo    nnn     nn    bb            ii    aa      aa    nnn     nn
+    mm  mm  mm    oo      oo    oo      oo    nn      nn    bbbbbbbbb     ii    aa      aa    nn      nn
+    mm  mm  mm    oo      oo    oo      oo    nn      nn    bb      bb    ii    aa      aa    nn      nn
+    mm  mm  mm    oooooooooo    oooooooooo    nn      nn    bbbbbbbbb     ii      aaaaaa a    nn      nn
+
+                                      the embedded operating system
+
 "
 
 dpkg --configure -a
-hostname $HOSTNAME
-echo $HOSTNAME > /etc/hostname
+hostname $ROOTFS_HOSTNAME
+echo $ROOTFS_HOSTNAME > /etc/hostname
 
+echo "Enter root password"
 passwd
+
+
+echo "
+
+Creating an user with the name $ROOTFS_USERNAME
+
+"
+adduser orangepi
+
+
+
+apt-get update
 
 if [[ $1 = "xfce" ]]; then
   apt-get -yy install xfce4 xdm xfce4-goodies
 fi
 
-apt-get -yy install locales wpasupplicant iw ssh
-sed -i '/en_US.UTF-8/s/^#//' /etc/locale.gen
-locale-gen en_US.UTF-8
+apt-get -yy install locales debconf wpasupplicant iw ssh network-manager ntp
+dpkg-reconfigure locales
 
 echo "
-modprobe hdmi
-
-exit 0
-" > /etc/rc.local
+hdmi
+gpio-sunxi
+" > /etc/modules

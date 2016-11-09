@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sync
-losetup /dev/loop0 distimage.img
+losetup /dev/loop0 $2-$3-$4-image.img
 partprobe /dev/loop0
 mkfs.ext2 /dev/loop0p1
 mount /dev/loop0p1 /mnt

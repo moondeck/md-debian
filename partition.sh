@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo fdisk distimage.img <<EOF
+sudo fdisk $1-$2-$3-image.img <<EOF
 o
 n
 p
