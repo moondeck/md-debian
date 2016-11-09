@@ -1,5 +1,0 @@
-# Device nodes to trigger on-demand module loading.
-autofs4 autofs c10:235
-fuse fuse c10:229
-ppp_generic ppp c108:0
-snd_timer snd/timer c116:33
