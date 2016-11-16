@@ -9,9 +9,7 @@ ARCH=armhf
 CARDSIZE=2048                       # size of the image, can be down to about 700mb for a usable minimal nogui image.
 TARGET_BOARD=
 WINDOW_MANAGER=                #must be "nogui" if no WM
-VERSION=1.0.0
-RETURN_BOARD=0
-
+VERSION=
 whoami > .tmp_who
 
 
@@ -21,13 +19,15 @@ if [[ ! ($(cat .tmp_who) == "root") ]]; then
 fi
 
 dialog --backtitle "moonbian build system || created by moondeck ||" \
-      --menu "Select board" 20 40 25 "Orange Pi One Debian CLI" "" \
+      --menu "Select board" 20 70 25 "Orange Pi One Debian CLI" "" \
       "Orange Pi One Debian XFCE" "" \
       "Orange Pi PC+ Debian CLI" "" \
       "Orange Pi PC+ Debian XFCE" "" \
       "Orange Pi PC Debian CLI" "" \
       "Orange Pi PC Debian XFCE" "" \
-      "Make image" "" 2> .tmp_board
+      "Orange Pi Plus 2E Debian CLI" "" \
+      "Orange Pi Plus 2E Debian XFCE" "" \
+      "Make image" "DEBUG OPTION" 2> .tmp_board
 
 if [[ ! ($? == 0)]]; then
   echo "moonbian build script exiting..."
@@ -35,6 +35,18 @@ if [[ ! ($? == 0)]]; then
   rm .tmp*
   exit
 fi
+
+dialog --nocancel --backtitle "moonbian build system || created by moondeck ||" \
+      --inputbox "Input image verison" 10 70 2> .tmp_version
+
+if [[ ! ($? == 0)]]; then
+  echo "moonbian build script exiting..."
+  rm -rf md-debian sun8i rootfs distimage.img Sambooca-Kernel-H3 u-boot u-boot-sunxi-with-spl.bin
+  rm .tmp*
+  exit
+fi
+
+VERSION=$(cat .tmp_version)
 
 case $(cat .tmp_board) in
   "Orange Pi One Debian CLI" )
@@ -54,6 +66,12 @@ case $(cat .tmp_board) in
     WINDOW_MANAGER="nogui";;
   "Orange Pi PC Debian XFCE")
     TARGET_BOARD="orangepi_pc"
+    WINDOW_MANAGER="xfce";;
+  "Orange Pi Plus 2E Debian CLI")
+    TARGET_BOARD="orangepi_plus2e"
+    WINDOW_MANAGER="nogui";;
+  "Orange Pi Plus 2E Debian XFCE")
+    TARGET_BOARD="orangepi_plus2e"
     WINDOW_MANAGER="xfce";;
   "Make image")
     TARGET_BOARD="rootfsbuild"
@@ -80,7 +98,7 @@ rm rootfs/bin/chrootscript
 
 ./getuboot.sh $TARGET_BOARD $CROSS_COMPILE $CC
 
-./getkern.sh $CC $CROSS_COMPILE $TARGET_ROOTFS
+./getkern.sh $CC $CROSS_COMPILE
 
 dd if=/dev/zero of=$TARGET_BOARD-$VERSION-$WINDOW_MANAGER-image.img bs=1M count=$CARDSIZE
 sync
@@ -88,6 +106,6 @@ sync
 ./partition.sh $TARGET_BOARD $VERSION $WINDOW_MANAGER
 ./copy-rootfs.sh rootfs $TARGET_BOARD $VERSION $WINDOW_MANAGER
 
-rm -rf md-debian sun8i rootfs distimage.img Sambooca-Kernel-H3 u-boot u-boot-sunxi-with-spl.bin
+
 rm .tmp*
 echo "moondeck's debian build system done. thanks."

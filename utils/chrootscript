@@ -3,6 +3,11 @@
 
 
 ROOTFS_HOSTNAME="opi-debian"
+
+ROOTFS_USER_PASS="orangepi"
+ROOTFS_ROOT_PASSWORD="root"
+
+
 ROOTFS_USERNAME="orangepi"
 echo "
 
@@ -20,26 +25,29 @@ dpkg --configure -a
 hostname $ROOTFS_HOSTNAME
 echo $ROOTFS_HOSTNAME > /etc/hostname
 
-echo "Enter root password"
-passwd
+echo "root password is $ROOTFS_ROOT_PASSWORD"
+
+echo root:$ROOTFS_ROOT_PASSWORD | chpasswd
 
 
 echo "
 
 Creating an user with the name $ROOTFS_USERNAME
+User password is $ROOTFS_USER_PASS
 
 "
-adduser orangepi
+adduser $ROOTFS_USERNAME --disabled-password
 
+echo $ROOTFS_USERNAME:$ROOTFS_USER_PASS | chpasswd
 
 
 apt-get update
 
 if [[ $1 = "xfce" ]]; then
-  apt-get -yy install xfce4 xdm xfce4-goodies
+  apt-get -yy install xfce4 xdm xfce4-goodies network-manager-gnome chromium
 fi
 
-apt-get -yy install locales debconf wpasupplicant iw ssh network-manager ntp
+apt-get -yy install locales debconf wpasupplicant iw ssh network-manager ntp sunxi-tools
 dpkg-reconfigure locales
 
 echo "
