@@ -40,14 +40,24 @@ adduser $ROOTFS_USERNAME --disabled-password
 
 echo $ROOTFS_USERNAME:$ROOTFS_USER_PASS | chpasswd
 
+echo "
+deb http://deb.debian.org/debian jessie main
+deb http://http.debian.net/debian jessie-backports main
+
+deb http://repo.novakovsky.eu/moonbian moonbian/
+" > /etc/apt/sources.list
 
 apt-get update
 
 if [[ $1 = "xfce" ]]; then
-  apt-get -yy install xfce4 xdm xfce4-goodies network-manager-gnome chromium
+  apt-get -yy install xfce4 xdm xfce4-goodies network-manager-gnome
 fi
 
-apt-get -yy install locales debconf wpasupplicant iw ssh network-manager ntp sunxi-tools
+if [[ $1 = "gnome" ]]; then
+  apt-get -yy install gnome network-manager-gnome
+fi
+
+apt-get -yy install locales debconf wpasupplicant iw ssh network-manager ntp sunxi-tools md-orangepi
 dpkg-reconfigure locales
 
 echo "
