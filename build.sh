@@ -8,30 +8,21 @@ SYS_VERSION=
 ARCH=armhf
 CARDSIZE=2048                       # size of the image, can be down to about 700mb for a usable minimal nogui image.
 
+# END OF BUILD CONFIG
+
+
 whoami > .tmp_who
-
-
 if [[ ! ($(cat .tmp_who) == "root") ]]; then
   echo "you are not root!"
   exit
 fi
 
-dialog --backtitle "moonbian build system || created by moondeck ||" \
-      --menu "Select OS version" 20 70 25 "Debian Jessie" "" \
-      "Debian Stretch (dummy option)" "" 2> .tmp_system
-
-dialog --backtitle "moonbian build system || created by moondeck ||" \
-      --menu "Select board" 20 70 25 "Orange Pi One" "" \
-      "Orange Pi PC+" "" \
-      "Orange Pi PC" "" \
-      "Orange Pi Plus 2E" "" 2> .tmp_board
-
-dialog --backtitle "moonbian build system || created by moondeck ||" \
-      --menu "Select board" 20 70 25 "XFCE" "" \
-      "JWM (dummy option)" "" 2> .tmp_wm
-
-dialog --nocancel --backtitle "moonbian build system || created by moondeck ||" \
-      --inputbox "Input image verison" 10 70 2> .tmp_version
+if [[ $1 == "--help" || $1 == "-h" || $# == 0 ]]; then
+  echo $#
+  echo "Usage: build.sh system board board_series wm img_version"
+  echo "See moondeck.github.io/md-debian for an up-to-date list of options"
+  exit
+fi
 
 if [[ ! ($? == 0)]]; then
   echo "moonbian build script exiting..."
@@ -40,44 +31,12 @@ if [[ ! ($? == 0)]]; then
   exit
 fi
 
-VERSION=$(cat .tmp_version)
+VERSION=$5
+TARGET_BOARD=$2
+BOARD_SERIES=$3
+SYS_VERSION=$1
+WINDOW_MANAGER=$4
 
-case $(cat .tmp_board) in
-  "Orange Pi One" )
-    TARGET_BOARD="orangepi_one"
-    BOARD_SERIES="orangepi";;
-
-  "Orange Pi PC+" )
-    TARGET_BOARD="orangepi_pc_plus"
-    BOARD_SERIES="orangepi";;
-
-  "Orange Pi PC" )
-    TARGET_BOARD="orangepi_pc"
-    BOARD_SERIES="orangepi";;
-
-  "Orange Pi Plus 2E" )
-    TARGET_BOARD="orangepi_plus2e"
-    BOARD_SERIES="orangepi"
-
-esac
-
-case $(cat .tmp_system) in
-  "Debian Jessie" )
-    SYS_VERSION="jessie";;
-
-  "Debian Stretch" )
-    SYS_VERSION="stretch"
-
-esac
-
-case $(cat .tmp_wm) in
-  "Debian Jessie" )
-    WINDOW_MANAGER="xfce";;
-
-  "JWM" )
-    WINDOW_MANAGER="jwm"
-
-esac
 clear
 
 rm -rf md-debian sun8i rootfs *.img Sambooca-Kernel-H3 u-boot u-boot-sunxi-with-spl.bin *.tar.gz
@@ -95,7 +54,7 @@ rm rootfs/bin/chrootscript-$SYS_VERSION
 
 ./getuboot.sh $TARGET_BOARD $CROSS_COMPILE $CC
 
-./getkern.sh $CC $CROSS_COMPILE
+./getkern.sh $CC $CROSS_COMPILE $BOARD_SERIES
 
 dd if=/dev/zero of=$TARGET_BOARD-$VERSION-$WINDOW_MANAGER-image.img bs=1M count=$CARDSIZE
 sync

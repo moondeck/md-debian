@@ -57,7 +57,7 @@ if [[ $1 = "gnome" ]]; then
   apt-get -yy install gnome network-manager-gnome
 fi
 
-apt-get -yy install locales debconf wpasupplicant iw ssh network-manager ntp sunxi-tools md-orangepi
+apt-get -yy install locales debconf wpasupplicant iw ssh network-manager ntp sunxi-tools
 dpkg-reconfigure locales
 
 echo "
