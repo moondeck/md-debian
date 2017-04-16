@@ -3,10 +3,10 @@
 # BUILD CONFIGURATION HERE, CHANGE IF NEEDED!!!
 
 CROSS_COMPILE=arm-linux-gnueabihf-
-CC=arm-linux-gnueabihf-gcc-5
+CC=arm-linux-gnueabihf-gcc
 SYS_VERSION=
 ARCH=armhf
-CARDSIZE=2048                       # size of the image, can be down to about 700mb for a usable minimal nogui image.
+CARDSIZE=1024                       # size of the image, can be down to about 700mb for a usable minimal nogui image.
 
 # END OF BUILD CONFIG
 
@@ -17,8 +17,7 @@ if [[ ! ($(cat .tmp_who) == "root") ]]; then
   exit
 fi
 
-if [[ $1 == "--help" || $1 == "-h" || $# == 0 ]]; then
-  echo $#
+if [[ $1 == "--help" || $1 == "-h" || $# < 5 ]]; then
   echo "Usage: build.sh system board board_series wm img_version"
   echo "See moondeck.github.io/md-debian for an up-to-date list of options"
   exit

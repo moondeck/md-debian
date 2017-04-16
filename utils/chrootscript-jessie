@@ -17,13 +17,11 @@ echo "
     mm  mm  mm    oo      oo    oo      oo    nn      nn    bb      bb    ii    aa      aa    nn      nn
     mm  mm  mm    oooooooooo    oooooooooo    nn      nn    bbbbbbbbb     ii      aaaaaa a    nn      nn
 
-                                      the embedded operating system
 
 "
 
 dpkg --configure -a
 hostname $ROOTFS_HOSTNAME
-echo $ROOTFS_HOSTNAME > /etc/hostname
 
 echo "root password is $ROOTFS_ROOT_PASSWORD"
 
@@ -36,9 +34,7 @@ Creating an user with the name $ROOTFS_USERNAME
 User password is $ROOTFS_USER_PASS
 
 "
-adduser $ROOTFS_USERNAME --disabled-password
-
-echo $ROOTFS_USERNAME:$ROOTFS_USER_PASS | chpasswd
+useradd -p $ROOTFS_USER_PASS $ROOTFS_USERNAME
 
 echo "
 deb http://deb.debian.org/debian jessie main
